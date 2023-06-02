@@ -1,0 +1,160 @@
+﻿@model IEnumerable<SpendingManagement.Models.EF.category>
+@{
+    ViewBag.Title = "Thể loại";
+    ViewBag.LinkModal = "#modalAddCategory";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<div class="card">
+    <div class="card-header">
+        <strong class="card-title">Bảng thể loại</strong>
+    </div>
+    <div class="table-stats order-table ov-h">
+        <table class="table" id="myTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên thể loại</th>
+                    <th>Đường dẫn</th>
+                    <th>Lần cuối cập nhật</th>
+                    <th>Tùy chọn</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>#@item.id</td>
+                        <td><span class="name">@item.name</span></td>
+                        <td>@item.meta</td>
+                        <td>@item.last_update.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <a class="btn btn-primary btn-sm edit-btn" data-toggle="modal" data-target="#modalEditCategory" data-id="security_@item.id" href="#"><i class="fa-regular fa-pen-to-square"></i></a>
+                            <a class="btn btn-danger btn-sm delete-btn" data-id="security_@item.id" href="#"><i class="fa-solid fa-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <!--Pagination-->
+    <div class="row" style="margin: auto;">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                @if (ViewBag.TotalPage > 1)
+                {
+                    var pageDisplay = (int)ViewBag.MaxPage;
+                    int totalPage = (int)ViewBag.TotalPage;
+                    int currentPage = (int)ViewBag.Page;
+
+                    var startPageIndex = Math.Max(1, currentPage - pageDisplay / 2);
+                    var endPageIndex = Math.Min(totalPage, currentPage + pageDisplay / 2);
+
+                    var link = "/quan-li-the-loai";
+
+                    if (currentPage > ViewBag.First)
+                    {
+                        <li class="page-item"><a class="page-link" href="@link?page=@ViewBag.First" tabindex="-1"><i class="fa-solid fa-angles-left"></i></a></li>
+                        <li class="page-item"><a class="page-link" href="@link?page=@(currentPage-1)" tabindex="-1"><i class="fa-solid fa-chevron-left"></i></a></li>
+                    }
+                    for (int i = startPageIndex; i <= endPageIndex; i++)
+                    {
+                        if (i == currentPage)
+                        {
+                            <li class="page-item active"><a class="page-link" href="@link?page=@i" tabindex="-1">@i <span class="sr-only">(current)</span></a></li>
+                        }
+                        else
+                        {
+                            <li class="page-item"><a class="page-link" href="@link?page=@i" tabindex="-1">@i</a></li>
+                        }
+                    }
+                    if (currentPage < totalPage)
+                    {
+                        <li class="page-item"><a class="page-link" href="@link?page=@(currentPage+1)" tabindex="-1"><i class="fa-solid fa-chevron-right"></i></a></li>
+                        <li class="page-item"><a class="page-link" href="@link?page=@totalPage" tabindex="-1"><i class="fa-solid fa-angles-right"></i></a></li>
+                    }
+                }
+            </ul>
+        </nav>
+    </div>
+    @RenderPage("~/Areas/Admin/Views/ModalAdd/ModalAddCategory.cshtml")
+    @RenderPage("~/Areas/Admin/Views/ModalEdit/ModalEditCategory.cshtml")
+</div>
+@section customjs{
+<script>
+    let pageSize = @ViewBag.PageSize;
+    let pageIndex = @ViewBag.Page;
+    $("#submitCategory").on('click', function () {
+        $.post("/FilmManager/AddCategory/", { categoryName: $("#txtCategory").val() }, function (result) {
+            if (result.result) {
+                $.alert(result.text);
+                loadData();
+            }
+            else {
+                $.alert(result.text)
+            }
+        })
+    });
+    $(".edit-btn").on('click', function (rs) {
+        $.get("/GetData/GetCategory", { strID: $(this).data('id') }, function (rs) {
+            $("#txtEditCategory").val(rs.name);
+            $("#txtEditCategory").data('id', rs.id);
+            $("#txtEditCategory").focus();
+        });
+    });
+    $("#submitEditCategory").on('click', function () {
+        let category = {
+            id: $("#txtEditCategory").data('id'),
+            name: $("#txtEditCategory").val(),
+        };
+        console.log(category);
+        $.post("/UpdateData/UpdateCategory", { category: category }, function (result) {
+            if (result.result) {
+                $.alert(result.text);
+                loadData();
+            }
+            else {
+                $.alert(result.text);
+            }
+        })
+    });
+    $(".delete-btn").on('click', function () {
+        let row = $(this).closest('tr');
+        $.confirm({
+            title: 'Xác nhận',
+            content: 'Bạn có chắc muốn xóa nội dung này ?',
+            buttons: {
+                confirm: {
+                    text: 'Xóa',
+                    action: function () {
+                        $.post("/Delete/DeleteCategory", { categoryId: $(this).data('id') }, function (rs) {
+                            if (rs.result) {
+                                $.alert(rs.text);
+                                row.remove();
+                                loadData();
+                            }
+                            else {
+                                $.alert(rs.text);
+                            }
+                        })
+                    }
+                },
+                cancel: {
+                    text: 'Hủy'
+                }
+            }
+        })
+        
+    });
+    function loadData() {
+        $.get("/GetData/GetListCategory/", { searchString: "", page: pageIndex, pageSize: pageSize }, function (rs) {
+            $("#myTable").find('tbody').html('');
+            $.each(rs, function (index,value) {
+                let html='<tr><td>#'+value.id+'</td><td><span class="name">'+value.name+'</span></td><td>'+value.meta+'</td><td>'+value.link+'</td>'
+                html += '<td><a class="btn btn-primary btn-sm edit-btn" data-toggle="modal" data-target="#modalEditCategory" data-id="security_' + value.id + '" href="#"><i class="fa-regular fa-pen-to-square"></i></a> '
+                html += '<a class="btn btn-danger btn-sm delete-btn" data-id="security_' + value.id + '" href="#"><i class="fa-solid fa-trash"></i></a></td></tr>'
+                $("#myTable").find('tbody').append(html);
+            })
+        })
+    }
+</script>    
+}

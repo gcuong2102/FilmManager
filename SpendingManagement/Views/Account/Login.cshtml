@@ -1,0 +1,56 @@
+﻿@using SpendingManagement.Models
+@model LoginViewModel
+@{
+    ViewBag.Title = "Đăng nhập";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+<div class="sufee-login d-flex align-content-center flex-wrap">
+    <div class="container">
+        <div class="login-content">
+            <div class="login-logo">
+                <a href="index.html">
+                    <img class="align-content" src="~/areas/admin/assets/images/logo.png" alt="">
+                </a>
+            </div>
+            <div class="login-form">
+                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Email)
+                        <div>
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Password)
+                        <div>
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            @Html.CheckBoxFor(m => m.RememberMe)
+                            @Html.LabelFor(m => m.RememberMe)
+                        </label>
+                        <label class="pull-right">
+                            @Html.ActionLink("Quên mật khẩu?", "ForgotPassword")
+                        </label>
+
+                    </div>
+                    <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Đăng nhập</button>
+                    <div class="social-login-content">
+                        <div class="social-button">
+                            <button type="button" class="btn social facebook btn-flat btn-addon mb-3"><i class="ti-facebook"></i>Đăng nhập với Facebook</button>
+                        </div>
+                    </div>
+                    <div class="register-link m-t-15 text-center">
+                        <p>Chưa có tài khoản?@Html.ActionLink(" Đăng ký ngay", "Register")</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

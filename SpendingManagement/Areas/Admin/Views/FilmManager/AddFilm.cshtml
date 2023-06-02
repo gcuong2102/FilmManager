@@ -1,0 +1,371 @@
+﻿@model SpendingManagement.Models.ViewModels.FilmViewModels
+
+@{
+    ViewBag.Title = "Thêm phim mới";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col" style="margin:auto">
+                <h4>Thêm mới</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-body card-block">
+        @using (Html.BeginForm("AddFilm", "FilmManager", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(m => m.filmname, new { @class = "form-control-label" })
+                @Html.TextBoxFor(m => m.filmname, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.filmname, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-12">
+                        @Html.LabelFor(model => model.category_id, new { @class = "form-control-label" })
+                    </div>
+                    <div class="col-12" style="margin: 0px 0px 10px 0px">
+                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modalAddCategory"><i class="fa-regular fa-address-book"></i>&nbsp; Thêm thể loại</button>
+                    </div>
+                    <div class="col-12">
+                        @Html.DropDownListFor(model => model.category_id, (SelectList)ViewBag.CategoryList, null, new
+                        {
+                            @class = "form-control chosen-select",
+                            @multiple = "true",
+                        })
+                    </div>
+                    <div class="col-12">
+                        @Html.ValidationMessageFor(model => model.category_id, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.description, new { @class = "form-control-label" })
+                @Html.TextAreaFor(m => m.description, new { @class = "form-control", @rows = 4 })
+                @Html.ValidationMessageFor(model => model.description, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.time, new { @class = "form-control-label" })
+                @Html.TextBoxFor(m => m.time, new { @class = "form-control", type = "number" })
+                @Html.ValidationMessageFor(model => model.time, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-12">
+                        @Html.LabelFor(m => m.getIds, new { @class = "form-control-label", @for = "file-multiple-input" })
+                        <div id="listImages" style="margin-bottom:10px">
+
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        @Html.TextBoxFor(m => m.getIds, new { @style = "display:none" })
+                        @Html.ValidationMessageFor(model => model.getIds, "", new { @class = "text-danger" })
+                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalImages">
+                            Chọn ảnh
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" id="chosenLanguage">
+                @Html.LabelFor(model => model.orginal_language_id, htmlAttributes: new { @class = "form-control-label" })
+                @Html.DropDownListFor(model => model.orginal_language_id, (SelectList)ViewBag.LanguageList, "Chọn ngôn ngữ chính", new
+           {
+               @class = "form-control listLanguage"
+           })
+                @Html.ValidationMessageFor(model => model.orginal_language_id, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.quality_id, htmlAttributes: new { @class = "form-control-label" })
+                @Html.DropDownListFor(model => model.quality_id, (SelectList)ViewBag.QualityList, "Chọn chất lượng phim", new
+           {
+               @class = "form-control"
+           })
+                @Html.ValidationMessageFor(model => model.quality_id, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.country_id, htmlAttributes: new { @class = "form-control-label" })
+                @Html.DropDownListFor(model => model.country_id, (SelectList)ViewBag.CountryList, "Chọn nước sản xuất", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.country_id, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-12">
+                        @Html.LabelFor(model => model.language_id, new { @class = "form-control-label" })
+                    </div>
+                    <div class="col-12" style="margin: 0px 0px 10px 0px">
+                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalAddLanguage"><i class="fa-solid fa-language"></i>&nbsp; Thêm ngôn ngữ</button>
+                    </div>
+                    <div class="col-12">
+                        @Html.DropDownListFor(model => model.language_id, (SelectList)ViewBag.LanguageList, null, new
+                         {
+                             @class = "form-control chosen-select col-12",
+                             @multiple = "true"
+                         })
+                    </div>
+                    <div class="col-12">
+                        @Html.ValidationMessageFor(model => model.language_id, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.release_date, new { @class = "form-control-label" })
+                @Html.TextBoxFor(m => m.release_date, new { @class = "form-control", type = "datetime-local" })
+                @Html.ValidationMessageFor(model => model.release_date, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                <label>Đường dẫn phim</label>
+                <div class="input-group mb-3">
+                    <input type="file" id="choseFilm" @*style="display:none"*@/>
+                    <input type="text" class="form-control" id="txtPathName" placeholder="Đường dẫn phim" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="button" id="btnChosePath">Chọn đường dẫn</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.status_id, htmlAttributes: new { @class = "form-control-label" })
+                @Html.DropDownListFor(model => model.status_id, (SelectList)ViewBag.StatusList, "Chọn trạng thái", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.status_id, "", new { @class = "text-danger" })
+            </div>
+
+            <button type="submit" class="btn btn-success">Thêm phim mới</button>
+            <button type="reset" class="btn btn-danger">Nhập lại</button>
+        }
+        <!-- Modal -->
+        <div class="modal fade" id="modalImages" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Chọn hình ảnh có sẵn</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="FixedHeightContainer">
+                            <div class="row" id="galleryImages">
+                                @using (Html.BeginForm("AddImage", "FilmManager", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmImage" }))
+                                {
+                                    <input type="file" multiple id="files" name="files" style="display:none" />
+                                }
+                                @foreach (var item in (List<SpendingManagement.Models.EF.image>)ViewBag.ImageList)
+                                {
+                                    <div class="responsive">
+                                        <div class="gallery">
+                                            <a onclick="selectimg(this)" href="javascript:;">
+                                                <img data-imageid="@item.id" src="~/images/@item.name" width="600" height="400">
+                                            </a>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="clearfix"></div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('files').click()">Nhấn để tải ảnh lên</button>
+                        <button id="btnSelectImg" type="button" class="btn btn-primary btn-sm">Xác nhận(0)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @RenderPage("~/Areas/Admin/Views/ModalAdd/ModalAddLanguage.cshtml")
+        @RenderPage("~/Areas/Admin/Views/ModalAdd/ModalAddCategory.cshtml")
+    </div>
+</div>
+@section customjs{
+    <style>
+        .select-img {
+            border: 2px solid red;
+        }
+        div.gallery {
+            border: 1px solid #ccc;
+        }
+            div.gallery:hover {
+                border: 1px solid #777;
+            }
+            div.gallery img {
+                width: 100%;
+                height: auto;
+            }
+        div.desc {
+            padding: 15px;
+            text-align: center;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        .responsive {
+            padding: 0 6px;
+            float: left;
+            width: 24.99999%;
+        }
+        @@media only screen and (max-width: 700px) {
+            .responsive {
+                width: 49.99999%;
+                margin: 6px 0;
+            }
+        }
+        @@media only screen and (max-width: 500px) {
+            .responsive {
+                width: 100%;
+            }
+        }
+        .clearfix:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        .FixedHeightContainer {
+            height: 700px;
+        }
+        #galleryImages{
+            height:700px;
+            overflow:auto;
+        }
+        .imageList{
+            width:100px;
+            height:100px;
+            margin:0 10px 10px 0;
+            border: 1px solid #000000;
+        }
+    </style>
+    <script>
+        $(".chosen-select").select2()
+        function customChosen() {
+            $.each($(".select2.select2-container.select2-container--default"), function (index, value) {
+                $(value).css('width', '100%');
+            })
+            $.each($(".select2-container--default.select2-selection--multiple"), function (index, value) {
+                $(value).css('border', '1px solid #ced4da');
+            });
+            $('.modal').css('overflow-y', 'auto');
+        }
+        customChosen()
+        $("#btnSubmitLanguage").click(function () {
+            let language = $("#txtLanguage").val().trim()
+            if (language.length == 0) {
+                return false;
+            }
+            else {
+                $.post("/FilmManager/AddLanguage", { languageName: language }, function (result) {
+                    if (result.result) {
+                        $.alert(result.text);
+                        $("#txtLanguage").val("")
+                        $(".listLanguage").each(function (index, value) {
+                            $(value).append('<option value="' + result.data.id + '">' + result.data.name + '</option>')
+                        });
+                        //add data
+                        var data = {
+                            id: result.data.id,
+                            text: result.data.name
+                        };
+                        var newOption = new Option(data.text, data.id, false, false);
+                        $('#language_id').append(newOption).trigger('change');
+                        // end add data
+                    }
+                    else {
+                        $.alert(result.text)
+                    }
+                })
+            }
+        })
+        $("#submitCategory").click(function () {
+            let category = $("#txtCategory").val().trim();
+            if (category.length == 0) {
+                return false;
+            }
+            else {
+                $.post("/FilmManager/AddCategory", { categoryName: category }, function (result) {
+                    if (result.result) {
+                        $.alert(result.text);
+                        $("#txtCategory").val("")
+                        //add data
+                        var data = {
+                            id: result.data.id,
+                            text: result.data.name
+                        };
+                        var newOption = new Option(data.text, data.id, false, false);
+                        $('#category_id').append(newOption).trigger('change');
+                        //end add data
+                    }
+                    else {
+                        $.alert(result.text)
+                    }
+                })
+            }
+        });
+        function selectimg(element) {
+            var img = $(element).find('img');
+            if ($(img).hasClass('select-img')) {
+                $(element).find('img').removeClass('select-img')
+            } else {
+                $(element).find('img').addClass('select-img')
+            }
+            var numImage = $(".select-img").length;
+            $("#btnSelectImg").text("Xác nhận(" + numImage + ")")
+        }
+        $("#frmImage").on('submit', function (e) {
+            e.preventDefault();
+            var formdata = new FormData();
+
+            for (let i = 0; i < $("#files")[0].files.length; i++) {
+                formdata.append('files', $("#files")[0].files[i])
+            }
+            //$.post("/FilmManager/AddFilm/", formdata, function (result) {
+            //    console.log(result)
+            //},false)
+            $.ajax({
+                url: "/FilmManager/AddImage",
+                data: formdata,
+                processData: false,
+                dataType: false,
+                type: "POST",
+                contentType: false, // Not to set any content header
+                success: function (result) {
+                    $.each(result, function (index, value) {
+                        let html = '<div class="responsive"><div class="gallery"> <a onclick="selectimg(this)" href="javascript:;"><img class="select-img" data-imageid="' + value.id + '" src="/images/' + value.name.trim() + '" width="600" height="400"> </a></div></div>'
+                        $("#galleryImages").prepend(html);
+                    })
+                }
+            })
+            return false;
+        });
+        $("#files").on('change', function (e) {
+            $("#frmImage").submit();
+        });
+        $("#btnSelectImg").click(function () {
+            var imagesSelected = $("div#galleryImages img.select-img")
+            var list = new Array();
+            $.each(imagesSelected, function (index, value){
+                list.push($(value).data('imageid'))               
+            })
+            $("#getIds").val(list);
+            $("#listImages").html('');
+            $.each(imagesSelected, function (index, value) {
+                let imageslected = '<img data-imageid="' + $(value).data('imageid') + '" src="' + $(value).attr('src')+'" class="imageList">';
+                $("#listImages").append(imageslected);
+            })
+            
+        })
+        $("#btnChosePath").on('click', function () {
+            $("#choseFilm").click();
+        })
+    </script>
+}

@@ -1,0 +1,107 @@
+﻿@model IEnumerable<SpendingManagement.Models.EF.status>
+
+@{
+    ViewBag.Title = "Trạng thái";
+    ViewBag.LinkModal = "#modalAddStatus";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+    <div class="card-header">
+        <strong class="card-title">Bảng trạng thái</strong>
+    </div>
+    <div class="table-stats order-table ov-h">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên trạng thái</th>
+                    <th>Hiệu lực</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>#@item.id</td>
+                        <td><span class="name">@item.name</span> </td>
+                        <td>
+                            @if (item.effection)
+                            {
+                                <span class="badge badge-complete">Hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-danger">Không hoạt động</span>
+                            }
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <!--Pagination-->
+    <div class="row" style="margin: auto;">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                @if (ViewBag.TotalPage > 1)
+                {
+                    var pageDisplay = (int)ViewBag.MaxPage;
+                    int totalPage = (int)ViewBag.TotalPage;
+                    int currentPage = (int)ViewBag.Page;
+
+                    var startPageIndex = Math.Max(1, currentPage - pageDisplay / 2);
+                    var endPageIndex = Math.Min(totalPage, currentPage + pageDisplay / 2);
+
+                    var link = "/quan-li-trang-thai";
+
+                    if (currentPage > ViewBag.First)
+                    {
+                        <li class="page-item"><a class="page-link" href="@link?page=@ViewBag.First" tabindex="-1"><i class="fa-solid fa-angles-left"></i></a></li>
+                        <li class="page-item"><a class="page-link" href="@link?page=@(currentPage-1)" tabindex="-1"><i class="fa-solid fa-chevron-left"></i></a></li>
+                    }
+                    for (int i = startPageIndex; i <= endPageIndex; i++)
+                    {
+                        if (i == currentPage)
+                        {
+                            <li class="page-item active"><a class="page-link" href="@link?page=@i" tabindex="-1">@i <span class="sr-only">(current)</span></a></li>
+                        }
+                        else 
+                        {
+                            <li class="page-item"><a class="page-link" href="@link?page=@i" tabindex="-1">@i</a></li>
+                        }
+                    }
+                    if (currentPage < totalPage)
+                    {
+                        <li class="page-item"><a class="page-link" href="@link?page=@(currentPage+1)" tabindex="-1"><i class="fa-solid fa-chevron-right"></i></a></li>
+                        <li class="page-item"><a class="page-link" href="@link?page=@totalPage" tabindex="-1"><i class="fa-solid fa-angles-right"></i></a></li>
+                    }
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+@RenderPage("~/Areas/Admin/Views/ModalAdd/ModalAddStatus.cshtml")
+
+@section customjs{
+    <script>
+        $("#submitStatus").click(function () {
+            var status = {
+                id: null,
+                name: $("#txtStatus").val().trim(),
+                effection: $("#txtEffection").val(),
+            }
+            $.post("/FilmManager/Status", { status: status }, function (result) {
+                if (result.result) {
+                    $.alert(result.text);
+                    $("#txtStatus").val("");
+                }
+                else {
+                    $.alert(result.text);
+                }
+            })
+        });
+    </script>    
+}
+

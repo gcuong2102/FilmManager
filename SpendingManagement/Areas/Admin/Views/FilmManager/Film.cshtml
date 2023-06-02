@@ -1,0 +1,123 @@
+﻿@model List<SpendingManagement.Models.ViewModels.FilmViewModels>
+@{
+    ViewBag.Title = "Phim";
+    ViewBag.LinkAdd = "/quan-li-film/them-moi";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var pageDisplay = (int)ViewBag.MaxPage;
+    int totalPage = (int)ViewBag.TotalPage;
+    int currentPage = (int)ViewBag.Page;
+
+    var startPageIndex = Math.Max(1, currentPage - pageDisplay / 2);
+    var endPageIndex = Math.Min(totalPage, currentPage + pageDisplay / 2);
+
+    var link = "/quan-li-phim";
+}
+    @foreach (var item in Model)
+    {
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col" style="margin:auto">
+                        <h4>@item.filmname.ToUpper()</h4>
+                    </div>
+                    <div class="col text-right">
+                        <button type="button" class="btn btn-success btn-sm" style="background-color: #f7444e "><i class="fa-regular fa-pen-to-square"></i>&nbsp; Chỉnh sửa</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-4">
+                        @{
+                            var image = new SpendingManagement.Models.EF.DataAccess().GetImageMain(item.film_id);
+                        }
+                        <img style="max-height:300px" class="img-responsive" href="~/images/@image.name" src="~/images/@image.name" />
+                    </div>
+                    <div class="col-8">
+                        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active show" id="pills-home-tab" data-toggle="pill" href="#inform-@item.film_id" role="tab" aria-controls="inform-1" aria-selected="true">Thông tin chung</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#comment-@item.film_id" role="tab" aria-controls="pills-profile" aria-selected="false">Mô tả</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="pills-tabContent">
+                            <div class="tab-pane fade active show" id="inform-@item.film_id" role="tabpanel" aria-labelledby="pills-home-tab">
+                                @{
+                                    var listCategory = new SpendingManagement.Models.EF.DataAccess().GetListCategoryFilm(item.film_id);
+                                }
+                                <p>
+                                    <b>Thể loại</b>:
+                                    @for (int i = 0; i < listCategory.Count; i++)
+                                    {
+                                        if (i == 0)
+                                        {
+                                            <a href="/@listCategory[i].meta">@listCategory[i].name</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="/@listCategory[i].meta">, @listCategory[i].name</a>
+                                        }
+
+                                    }
+                                </p>
+                                <p><b>Thời gian</b>: @item.time phút</p>
+                                <p><b>Ngày ra mắt</b>: @item.release_date.ToString("dd/MM/yyyy")</p>
+                                <p><b>Số lượt xem</b>: @item.view</p>
+                                <p>
+                                    <b>Trạng thái</b>:
+                                    @{
+                                        var status = new SpendingManagement.Models.EF.DataAccess().GetStatusFilm(item.status_id);
+                                    }
+                                    @if (status.effection)
+                                    {
+                                        <span class="badge badge-success">@status.name</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-danger">@status.name</span>
+                                    }
+
+                                </p>
+                                <p><b>Đánh giá</b>: <span style="color: orange"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star-half-stroke"></i></span></p>
+                            </div>
+                            <div class="tab-pane fade" id="comment-@item.film_id" role="tabpanel" aria-labelledby="pills-profile-tab">
+                                <p>@item.description</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+<div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            @if (totalPage > 1)
+            {
+                if (currentPage > ViewBag.First)
+                {
+                    <li class="page-item"><a class="page-link" href="@link?page=@ViewBag.First" tabindex="-1"><i class="fa-solid fa-angles-left"></i></a></li>
+                    <li class="page-item"><a class="page-link" href="@link?page=@(currentPage-1)" tabindex="-1"><i class="fa-solid fa-chevron-left"></i></a></li>
+                }
+                for (int i = startPageIndex; i <= endPageIndex; i++)
+                {
+                    if (i == currentPage)
+                    {
+                        <li class="page-item active"><a class="page-link" href="@link?page=@i" tabindex="-1">@i <span class="sr-only">(current)</span></a></li>
+                    }
+                    else
+                    {
+                        <li class="page-item"><a class="page-link" href="@link?page=@i" tabindex="-1">@i</a></li>
+                    }
+                }
+                if (currentPage < totalPage)
+                {
+                    <li class="page-item"><a class="page-link" href="@link?page=@(currentPage+1)" tabindex="-1"><i class="fa-solid fa-chevron-right"></i></a></li>
+                    <li class="page-item"><a class="page-link" href="@link?page=@totalPage" tabindex="-1"><i class="fa-solid fa-angles-right"></i></a></li>
+                }
+            }
+        </ul>
+    </nav>
+</div>
